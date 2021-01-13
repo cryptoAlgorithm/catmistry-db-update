@@ -39,24 +39,38 @@ const exit = (exitCode = 0) => {
     process.exit(exitCode);
 }
 
+const iOStoAndroidImg = (iosFilename) => {
+    return iosFilename.replace(/\.[^/.]+$/, "").replace(/-/gm, '_').toLowerCase();
+}
+
 const main = () => {
     const inDB  = firebase.database();
     const outDB = admin.database();
     inDB.ref('/').once('value').then((snapshot) => {
         console.log('Contents of input database:');
-        console.dir(snapshot.child('periodicTable').toJSON());
+        // console.dir(snapshot.child('learnTopics').toJSON());
 
         let outBuff = {
             learnTopics: {},
-            learnQns: {}
+            learnQns: {},
+            learnSubTopics: {}
         };
         let index = 0
         snapshot.child('learnTopics').forEach((learnTopic) => {
-            // console.log(learnTopic.toJSON());
+            // console.log(learnTopic.child('subTopics').toJSON());
+
+            let subTopics = []
+            learnTopic.child('subTopics').forEach((subTopic) => {
+                subTopics.push({
+                    title: subTopic.child('title').val(),
+                    icon: iOStoAndroidImg(subTopic.child('pic').val())
+                });
+            });
+            outBuff.learnSubTopics[index.toString()] = subTopics;
 
             outBuff.learnTopics[index.toString()] = {
                 title: learnTopic.child('title').val(),
-                icon:  learnTopic.child('pic').val().replace(/\.[^/.]+$/, "").replace(/-/gm, '_').toLowerCase(),
+                icon:  iOStoAndroidImg(learnTopic.child('pic').val()),
                 unlockPoints: learnTopic.child('pointsNeeded').val()
             };
             outBuff.learnQns[index.toString()] = learnTopic.child('questions').val();
