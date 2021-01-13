@@ -53,20 +53,45 @@ const main = () => {
         let outBuff = {
             learnTopics: {},
             learnQns: {},
-            learnSubTopics: {}
+            learnSubTopics: {},
+            subTopicsContent: {},
+            nestedSubTopics: {}
         };
         let index = 0
         snapshot.child('learnTopics').forEach((learnTopic) => {
             // console.log(learnTopic.child('subTopics').toJSON());
 
-            let subTopics = []
+            let subTopics = [];
+            let subTopicContent = [];
+            let innerSubtopicsHolder = {};
+
+            let n = 0;
             learnTopic.child('subTopics').forEach((subTopic) => {
                 subTopics.push({
                     title: subTopic.child('title').val(),
                     icon: iOStoAndroidImg(subTopic.child('pic').val())
                 });
+
+                subTopicContent.push({
+                    content: subTopic.child('content').child('definition').val(),
+                    appBarTitle: subTopic.child('navTitle').val()
+                });
+
+                // Nested sub topics
+                let innerSubtopics = [];
+                subTopic.child('subTopics').forEach((innerSubtopic) => {
+                    innerSubtopics.push({
+                        title: innerSubtopic.child('topic').val(),
+                        icon: iOStoAndroidImg(innerSubtopic.child('picture').val())
+                    });
+                });
+                innerSubtopicsHolder[n.toString()] = innerSubtopics
+
+                n++;
             });
             outBuff.learnSubTopics[index.toString()] = subTopics;
+            outBuff.subTopicsContent[index.toString()] = subTopicContent;
+            outBuff.nestedSubTopics[index.toString()] = innerSubtopicsHolder;
 
             outBuff.learnTopics[index.toString()] = {
                 title: learnTopic.child('title').val(),
