@@ -39,8 +39,35 @@ const exit = (exitCode = 0) => {
     process.exit(exitCode);
 }
 
+const numToResStr = (num) => {
+    switch (num) {
+        case '0':
+            return 'zero';
+        case '1':
+            return 'one';
+        case '2':
+            return 'two';
+        case '3':
+            return 'three';
+        case '4':
+            return 'four';
+        case '5':
+            return 'five';
+        case '6':
+            return 'six';
+        case '7':
+            return 'seven';
+        case '8':
+            return 'eight';
+        case '9':
+            return 'nine';
+        default:
+            return num
+    }
+}
+
 const iOStoAndroidImg = (iosFilename) => {
-    return iosFilename.replace(/\.[^/.]+$/, "").replace(/-/gm, '_').toLowerCase();
+    return numToResStr(iosFilename.replace(/\.[^/.]+$/, "").replace(/-/gm, '_').toLowerCase());
 }
 
 const main = () => {
@@ -74,7 +101,9 @@ const main = () => {
 
                 subTopicContent.push({
                     content: subTopic.child('content').child('definition').val(),
-                    appBarTitle: subTopic.child('navTitle').val()
+                    appBarTitle: subTopic.child('navTitle').val(),
+                    bottomImage: iOStoAndroidImg(subTopic.child('pic').val()),
+                    showPHSlider: subTopic.child('needSlider').val()
                 });
 
                 // Nested sub topics
