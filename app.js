@@ -82,7 +82,9 @@ const main = () => {
             learnQns: {},
             learnSubTopics: {},
             subTopicsContent: {},
-            nestedSubTopics: {}
+            nestedSubTopics: {},
+            nestedSubTopicsContent: {},
+            pHArray: {}
         };
         let index = 0
         snapshot.child('learnTopics').forEach((learnTopic) => {
@@ -91,6 +93,7 @@ const main = () => {
             let subTopics = [];
             let subTopicContent = [];
             let innerSubtopicsHolder = {};
+            let innerSubtopicsContentHolder = {};
 
             let n = 0;
             learnTopic.child('subTopics').forEach((subTopic) => {
@@ -106,21 +109,32 @@ const main = () => {
                     showPHSlider: subTopic.child('needSlider').val()
                 });
 
+                console.log(subTopic.toJSON());
+
                 // Nested sub topics
                 let innerSubtopics = [];
+                let innerSubtopicsContent = [];
                 subTopic.child('subTopics').forEach((innerSubtopic) => {
                     innerSubtopics.push({
                         title: innerSubtopic.child('topic').val(),
                         icon: iOStoAndroidImg(innerSubtopic.child('picture').val())
                     });
+                    innerSubtopicsContent.push({
+                        firstContent: innerSubtopic.child('content').child('firstAttributionText').val(),
+                        secondContent: innerSubtopic.child('content').child('secondAttributionText').val(),
+                        thirdContent: innerSubtopic.child('content').child('thirdAttributionText').val()
+                    });
                 });
-                innerSubtopicsHolder[n.toString()] = innerSubtopics
+                innerSubtopicsHolder[n.toString()] = innerSubtopics;
+                innerSubtopicsContentHolder[n.toString()] = innerSubtopicsContent;
 
                 n++;
             });
+            // Add all data to output buffer
             outBuff.learnSubTopics[index.toString()] = subTopics;
             outBuff.subTopicsContent[index.toString()] = subTopicContent;
             outBuff.nestedSubTopics[index.toString()] = innerSubtopicsHolder;
+            outBuff.nestedSubTopicsContent[index.toString()] = innerSubtopicsContentHolder;
 
             outBuff.learnTopics[index.toString()] = {
                 title: learnTopic.child('title').val(),
@@ -129,6 +143,22 @@ const main = () => {
             };
             outBuff.learnQns[index.toString()] = learnTopic.child('questions').val();
             index++;
+        });
+
+        let iter = 0;
+        snapshot.child('phGameOptionsArray').forEach((pHObj) => {
+            if (iter === 6) { // The ios database is super screwed
+                outBuff.pHArray[iter.toString()] = {
+                    pHImg: 'ph_7',
+                    pHDesc: 'Water'
+                }
+                iter++;
+            }
+            outBuff.pHArray[iter.toString()] = {
+                pHImg: iOStoAndroidImg(pHObj.child('image').val()),
+                pHDesc: pHObj.child('name').val()
+            }
+            iter++;
         });
 
         console.log('\nData to be written to output database:\n', outBuff);
