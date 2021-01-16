@@ -109,20 +109,31 @@ const main = () => {
                     showPHSlider: subTopic.child('needSlider').val()
                 });
 
-                console.log(subTopic.toJSON());
+                // console.log(subTopic.toJSON());
 
                 // Nested sub topics
                 let innerSubtopics = [];
                 let innerSubtopicsContent = [];
                 subTopic.child('subTopics').forEach((innerSubtopic) => {
+                    // Nested subtopics items
                     innerSubtopics.push({
                         title: innerSubtopic.child('topic').val(),
                         icon: iOStoAndroidImg(innerSubtopic.child('picture').val())
                     });
+                    // Nested subtopics content
                     innerSubtopicsContent.push({
                         firstContent: innerSubtopic.child('content').child('firstAttributionText').val(),
                         secondContent: innerSubtopic.child('content').child('secondAttributionText').val(),
-                        thirdContent: innerSubtopic.child('content').child('thirdAttributionText').val()
+                        thirdContent: innerSubtopic.child('content').child('thirdAttributionText').val(),
+                        lowPH: innerSubtopic.child('content').child('lowpH').val(),
+                        highPH: innerSubtopic.child('content').child('highpH').val(),
+                        lowPHColor: innerSubtopic.child('content').child('lowpHColor').val(),
+                        midPHColor: innerSubtopic.child('content').child('middlepHColor').val(),
+                        highPHColor: innerSubtopic.child('content').child('highpHColor').val(),
+                        lowPHDesc: innerSubtopic.child('content').child('lowpHColorName').val(),
+                        midPHDesc: innerSubtopic.child('content').child('middlepHColorName').val(),
+                        highPHDesc: innerSubtopic.child('content').child('highpHColorName').val(),
+                        emphasisText: innerSubtopic.child('content').child('warningText').val()
                     });
                 });
                 innerSubtopicsHolder[n.toString()] = innerSubtopics;
