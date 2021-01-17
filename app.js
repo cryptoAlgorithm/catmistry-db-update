@@ -84,7 +84,8 @@ const main = () => {
             subTopicsContent: {},
             nestedSubTopics: {},
             nestedSubTopicsContent: {},
-            pHArray: {}
+            pHArray: {},
+            gameTopics: {}
         };
         let index = 0
         snapshot.child('learnTopics').forEach((learnTopic) => {
@@ -127,13 +128,14 @@ const main = () => {
                         thirdContent: innerSubtopic.child('content').child('thirdAttributionText').val(),
                         lowPH: innerSubtopic.child('content').child('lowpH').val(),
                         highPH: innerSubtopic.child('content').child('highpH').val(),
-                        lowPHColor: innerSubtopic.child('content').child('lowpHColor').val(),
-                        midPHColor: innerSubtopic.child('content').child('middlepHColor').val(),
-                        highPHColor: innerSubtopic.child('content').child('highpHColor').val(),
+                        lowPHColor: '#' + innerSubtopic.child('content').child('lowpHColor').val(),
+                        midPHColor: '#' + innerSubtopic.child('content').child('middlepHColor').val(),
+                        highPHColor: '#' + innerSubtopic.child('content').child('highpHColor').val(),
                         lowPHDesc: innerSubtopic.child('content').child('lowpHColorName').val(),
                         midPHDesc: innerSubtopic.child('content').child('middlepHColorName').val(),
                         highPHDesc: innerSubtopic.child('content').child('highpHColorName').val(),
-                        emphasisText: innerSubtopic.child('content').child('warningText').val()
+                        emphasisText: innerSubtopic.child('content').child('warningText').val(),
+                        mainImg: iOStoAndroidImg(innerSubtopic.child('content').child('image').val())
                     });
                 });
                 innerSubtopicsHolder[n.toString()] = innerSubtopics;
@@ -160,14 +162,25 @@ const main = () => {
         snapshot.child('phGameOptionsArray').forEach((pHObj) => {
             if (iter === 6) { // The ios database is super screwed
                 outBuff.pHArray[iter.toString()] = {
-                    pHImg: 'ph_7',
-                    pHDesc: 'Water'
+                    phImg: 'ph_7',
+                    phDesc: 'Water'
                 }
                 iter++;
             }
             outBuff.pHArray[iter.toString()] = {
-                pHImg: iOStoAndroidImg(pHObj.child('image').val()),
-                pHDesc: pHObj.child('name').val()
+                phImg: iOStoAndroidImg(pHObj.child('image').val()),
+                phDesc: pHObj.child('name').val()
+            }
+            iter++;
+        });
+
+        iter = 0; // Reuse same var
+        // Game topics
+        snapshot.child('gameTopics').forEach((gameTopic) => {
+            outBuff.gameTopics[iter.toString()] = {
+                icon: iOStoAndroidImg(gameTopic.child('pic').val()),
+                title: gameTopic.child('title').val(),
+                unlockPoints: gameTopic.child('pointsNeeded').val()
             }
             iter++;
         });
